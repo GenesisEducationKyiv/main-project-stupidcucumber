@@ -1,25 +1,24 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func findEmail(email Email) bool {
+func getEmails() []string {
+	file, err := os.ReadFile("email.db")
 
-	f, err := os.ReadFile("email.db")
-
-	if err != nil && errors.Is(err, os.ErrNotExist) {
-		fmt.Println(err.Error())
-		return true
-	} else if err != nil {
-		fmt.Println(err.Error())
-		return false
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v", err)
+		return nil
 	}
 
-	var emails []string = strings.Split(string(f), "\n")
+	return strings.Split(string(file), "\n")
+}
+
+func findEmail(email Email) bool {
+	var emails []string = getEmails()
 
 	for i := 0; i < len(emails); i++ {
 		if emails[i] == email.Email {
