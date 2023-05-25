@@ -20,13 +20,6 @@ func findEmail(email Email) bool {
 	}
 
 	var emails []string = strings.Split(string(f), "\n")
-	/*
-		println(len(emails))
-		for i := 0; i < len(emails); i++ {
-			fmt.Println(emails[i])
-		}*/
-
-	//fmt.Println("The email to be found: ", email.Email)
 
 	for i := 0; i < len(emails); i++ {
 		if emails[i] == email.Email {
