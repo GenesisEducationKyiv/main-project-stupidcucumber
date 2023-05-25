@@ -1,6 +1,6 @@
 package main
 
 type ExchangeRate struct {
-	Mins  int    `mins`
-	Price string `price`
+	Mins  int    `json:"mins"`
+	Price string `json:"price"`
 }
