@@ -1,4 +1,4 @@
-package main
+package models
 
 type ExchangeRate struct {
 	Mins  int    `json:"mins"`

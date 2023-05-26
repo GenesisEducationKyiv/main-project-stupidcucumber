@@ -1,4 +1,4 @@
-package main
+package controlers
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func generateMessage(to string, price float64) *gomail.Message {
 	return message
 }
 
-func sendEmail(price float64) {
+func SendEmail(price float64) {
 	port, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
 	dialer := gomail.NewDialer(os.Getenv("SMTP_HOST"), int(port),
 		os.Getenv("HOST_EMAIL"), os.Getenv("HOST_PASSWORD"))

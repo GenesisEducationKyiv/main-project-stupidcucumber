@@ -10,6 +10,9 @@ import (
 
 	"log"
 
+	"api/bitcoin-api/controlers"
+	"api/bitcoin-api/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -40,7 +43,7 @@ func requestPriceBinance() float64 {
 
 	defer exchangeRate.Body.Close()
 	body, _ := ioutil.ReadAll(exchangeRate.Body)
-	var exchangeRateObj ExchangeRate
+	var exchangeRateObj models.ExchangeRate
 	if err := json.Unmarshal(body, &exchangeRateObj); err != nil {
 		fmt.Println(err.Error())
 		return -1
@@ -60,19 +63,19 @@ func getPrice(c *gin.Context) {
 }
 
 func postSubscribe(c *gin.Context) {
-	var newEmail Email
+	var newEmail models.Email
 
 	if err := c.BindJSON(&newEmail); err != nil {
 		c.IndentedJSON(http.StatusConflict, newEmail)
 		return
 	}
 
-	if !findEmail(newEmail) {
+	if !controlers.FindEmail(newEmail) {
 		c.IndentedJSON(409, newEmail)
 		return
 	}
 
-	addEmail(newEmail)
+	controlers.AddEmail(newEmail)
 
 	c.IndentedJSON(200, newEmail)
 }
@@ -80,7 +83,7 @@ func postSubscribe(c *gin.Context) {
 func postSendEmails(c *gin.Context) {
 	price := requestPriceBinance()
 
-	sendEmail(price)
+	controlers.SendEmail(price)
 
 	c.IndentedJSON(200, "Emails had been sent")
 }
