@@ -16,9 +16,9 @@ func generateMessage(to string, price float64) *gomail.Message {
 	var body bytes.Buffer
 
 	t.Execute(&body, struct {
-		Rate float64
+		Rate string
 	}{
-		Rate: price,
+		Rate: fmt.Sprintf("%f", price),
 	})
 
 	message := gomail.NewMessage()
@@ -36,8 +36,6 @@ func SendEmail(price float64) {
 	port, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
 	dialer := gomail.NewDialer(os.Getenv("SMTP_HOST"), int(port),
 		os.Getenv("HOST_EMAIL"), os.Getenv("HOST_PASSWORD"))
-
-	fmt.Println("Trying to log in!")
 
 	emails := getEmails()
 

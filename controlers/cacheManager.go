@@ -73,11 +73,7 @@ func updatePrice() float64 {
 func GetPrice() float64 {
 	cache := readCache()
 
-	fmt.Print(time.Now().Sub(cache.TimeStamp).Minutes())
-	fmt.Print(time.Now().Sub(cache.TimeStamp).Hours())
-
 	if time.Now().Sub(cache.TimeStamp).Minutes() <= 10 && time.Now().Sub(cache.TimeStamp).Hours() < 1 {
-		fmt.Println("Wow this priced was cached!")
 		return cache.Price
 	} else {
 		new_price := updatePrice()
