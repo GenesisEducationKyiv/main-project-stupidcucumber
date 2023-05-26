@@ -25,6 +25,8 @@ func generateMessage(to string, price float64) *gomail.Message {
 	message.SetHeader("From", os.Getenv("HOST_EMAIL"))
 	message.SetHeader("To", to)
 	message.SetHeader("Subject", "Cryptocurrency rate to UAH")
+	message.Embed("templates/logo.png")
+	message.Embed("templates/icons8-bitcoin-250.png")
 	message.SetBody("text/html", body.String())
 
 	return message
