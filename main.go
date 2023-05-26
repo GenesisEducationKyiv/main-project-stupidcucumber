@@ -8,8 +8,17 @@ import (
 	"net/url"
 	"strconv"
 
+	"log"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+}
 
 func requestPriceBinance() float64 {
 	base := "https://api.binance.com"
@@ -68,11 +77,20 @@ func postSubscribe(c *gin.Context) {
 	c.IndentedJSON(200, newEmail)
 }
 
+func postSendEmails(c *gin.Context) {
+	price := requestPriceBinance()
+
+	sendEmail(price)
+
+	c.IndentedJSON(200, "Emails had been sent")
+}
+
 func main() {
 	router := gin.Default()
 
 	router.GET("/rate", getPrice)
 	router.POST("/subscribe", postSubscribe)
+	router.POST("/sendEmails", postSendEmails)
 
 	router.Run("localhost:8080")
 }

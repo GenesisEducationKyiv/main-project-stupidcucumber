@@ -14,7 +14,16 @@ func getEmails() []string {
 		return nil
 	}
 
-	return strings.Split(string(file), "\n")
+	unfilteredEmails := strings.Split(string(file), "\n")
+	filteredEmails := []string{}
+
+	for i := 0; i < len(unfilteredEmails); i++ {
+		if unfilteredEmails[i] != "" {
+			filteredEmails = append(filteredEmails, unfilteredEmails[i])
+		}
+	}
+
+	return filteredEmails
 }
 
 func findEmail(email Email) bool {
