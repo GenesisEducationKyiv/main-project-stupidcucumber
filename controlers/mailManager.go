@@ -1,19 +1,31 @@
 package controlers
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strconv"
+
+	"text/template"
 
 	"gopkg.in/gomail.v2"
 )
 
 func generateMessage(to string, price float64) *gomail.Message {
+	t, _ := template.ParseFiles("templates/template.html")
+	var body bytes.Buffer
+
+	t.Execute(&body, struct {
+		Rate float64
+	}{
+		Rate: price,
+	})
+
 	message := gomail.NewMessage()
 	message.SetHeader("From", os.Getenv("HOST_EMAIL"))
 	message.SetHeader("To", to)
 	message.SetHeader("Subject", "Cryptocurrency rate to UAH")
-	message.SetBody("text/plain", fmt.Sprintf("Current price of BTC in Binance is %f", price))
+	message.SetBody("text/html", body.String())
 
 	return message
 }
