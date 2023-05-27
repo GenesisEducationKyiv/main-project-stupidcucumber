@@ -2,15 +2,26 @@ package controlers
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
 	"api/bitcoin-api/models"
+
+	"github.com/joho/godotenv"
 )
 
 var (
 	DATABASE_PATH = os.Getenv("DATABASE_PATH")
 )
+
+func init() {
+
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+	DATABASE_PATH = os.Getenv("DATABASE_PATH")
+}
 
 func getEmails() []string {
 	file, err := os.ReadFile(DATABASE_PATH)

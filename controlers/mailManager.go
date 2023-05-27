@@ -3,11 +3,13 @@ package controlers
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
 	"text/template"
 
+	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 )
 
@@ -17,6 +19,17 @@ var (
 	SMTP_HOST     = os.Getenv("SMTP_HOST")
 	SMTP_PORT     = os.Getenv("SMTP_PORT")
 )
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+
+	HOST_EMAIL = os.Getenv("HOST_EMAIL")
+	HOST_PASSWORD = os.Getenv("HOST_PASSWORD")
+	SMTP_HOST = os.Getenv("SMTP_HOST")
+	SMTP_PORT = os.Getenv("SMTP_PORT")
+}
 
 func generateMessage(to string, price float64) *gomail.Message {
 	t, _ := template.ParseFiles("templates/template.html")

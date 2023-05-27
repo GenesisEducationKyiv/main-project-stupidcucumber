@@ -3,11 +3,14 @@ package controlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
 	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
+
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -15,6 +18,11 @@ var (
 )
 
 func init() {
+
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+	CACHE_PATH = os.Getenv("CACHE_PATH")
 	file, err := os.Create(CACHE_PATH)
 	file.Close()
 
@@ -42,10 +50,12 @@ func writeCache(cache models.CachedPrice) {
 }
 
 func readCache() *models.CachedPrice {
+
+	fmt.Println(CACHE_PATH)
 	fileContent, err := os.ReadFile(CACHE_PATH)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during reading from '.cache': %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured during reading from %s: %v", CACHE_PATH, err)
 		return nil
 	}
 
