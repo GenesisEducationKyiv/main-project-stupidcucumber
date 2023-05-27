@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	httpsBinance       = "https://api.binance.core"
+	httpsBinance       = "https://api.binance.com"
 	httpsRoute         = "/api/v3/avgPrice"
 	convertionCurrency = "BTCUAH"
 	invalidPrice       = -1
