@@ -41,17 +41,13 @@ func writeCache(cache models.CachedPrice) {
 		return
 	}
 
-	err = os.WriteFile(CACHE_PATH, cached_json, 0766)
-
-	if err != nil {
+	if err = os.WriteFile(CACHE_PATH, cached_json, 0766); err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during writing to a file '.cache': %v", err)
 		return
 	}
 }
 
 func readCache() *models.CachedPrice {
-
-	fmt.Println(CACHE_PATH)
 	fileContent, err := os.ReadFile(CACHE_PATH)
 
 	if err != nil {
@@ -61,9 +57,7 @@ func readCache() *models.CachedPrice {
 
 	var cache models.CachedPrice
 
-	err = json.Unmarshal(fileContent, &cache)
-
-	if err != nil {
+	if err = json.Unmarshal(fileContent, &cache); err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during unmarshalling the cache: %v", err)
 		return nil
 	}

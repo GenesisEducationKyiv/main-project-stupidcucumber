@@ -58,6 +58,7 @@ func SendEmail(price float64) {
 		HOST_EMAIL, HOST_PASSWORD)
 
 	emails := getEmails()
+	fmt.Println("Emails has been sent!")
 
 	for i := 0; i < len(emails); i++ {
 		var message gomail.Message = *generateMessage(emails[i], price)

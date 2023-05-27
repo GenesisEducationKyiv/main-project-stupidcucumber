@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"log"
 
@@ -24,7 +25,7 @@ func getPrice(c *gin.Context) {
 	price := controlers.GetPrice()
 	answer["rate"] = price
 
-	c.IndentedJSON(200, answer)
+	c.IndentedJSON(http.StatusOK, answer)
 }
 
 func postSubscribe(c *gin.Context) {
@@ -35,17 +36,10 @@ func postSubscribe(c *gin.Context) {
 		return
 	}
 
-	if !controlers.FindEmail(newEmail) {
-		c.IndentedJSON(409, newEmail)
-		return
-	}
-
-	err := controlers.AddEmail(newEmail)
-
-	if err == nil {
-		c.IndentedJSON(200, newEmail)
+	if err := controlers.AddEmail(newEmail); err == nil {
+		c.IndentedJSON(http.StatusOK, newEmail)
 	} else {
-		c.IndentedJSON(409, err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
 	}
 }
 
@@ -54,7 +48,7 @@ func postSendEmails(c *gin.Context) {
 
 	controlers.SendEmail(price)
 
-	c.IndentedJSON(200, "Emails had been sent")
+	c.IndentedJSON(http.StatusOK, "Emails had been sent")
 }
 
 func main() {
@@ -64,5 +58,5 @@ func main() {
 	router.POST("/subscribe", postSubscribe)
 	router.POST("/sendEmails", postSendEmails)
 
-	router.Run("localhost:8080")
+	router.Run(":" + os.Getenv("APP_PORT"))
 }

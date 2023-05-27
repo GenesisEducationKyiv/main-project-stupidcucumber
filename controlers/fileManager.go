@@ -44,32 +44,32 @@ func getEmails() []string {
 	return filteredEmails
 }
 
-func FindEmail(email models.Email) bool {
+func findEmail(email models.Email) bool {
 	var emails []string = getEmails()
 
 	for i := 0; i < len(emails); i++ {
 		if emails[i] == email.Email {
-			return false
+			return true
 		}
 	}
 
-	return true
+	return false
 }
 
 func AddEmail(email models.Email) error {
 	f, err := os.OpenFile(DATABASE_PATH,
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
 
-	//TODO: add pattern recognition to validate registration of incoming emails
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v", err)
 		return err
 	}
 
+	fmt.Printf("Email added: %s", email.Email)
+
 	defer f.Close()
 
-	if helpers.ValidateEmail(email) {
+	if helpers.ValidateEmail(email) && !findEmail(email) {
 		f.WriteString(email.Email + "\n")
 	} else {
 		return fmt.Errorf("provided email is invalid")
