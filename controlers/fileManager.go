@@ -8,8 +8,12 @@ import (
 	"api/bitcoin-api/models"
 )
 
+var (
+	DATABASE_PATH = os.Getenv("DATABASE_PATH")
+)
+
 func getEmails() []string {
-	file, err := os.ReadFile("email.db")
+	file, err := os.ReadFile(DATABASE_PATH)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v", err)
@@ -41,10 +45,13 @@ func FindEmail(email models.Email) bool {
 }
 
 func AddEmail(email models.Email) {
-	f, err := os.OpenFile("email.db", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
+	f, err := os.OpenFile(DATABASE_PATH,
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
+
+	//TODO: add pattern recognition to validate registration of incoming emails
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v", err)
 		return
 	}
 

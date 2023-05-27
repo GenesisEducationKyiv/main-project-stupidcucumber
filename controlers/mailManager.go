@@ -11,6 +11,13 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+var (
+	HOST_EMAIL    = os.Getenv("HOST_EMAIL")
+	HOST_PASSWORD = os.Getenv("HOST_PASSWORD")
+	SMTP_HOST     = os.Getenv("SMTP_HOST")
+	SMTP_PORT     = os.Getenv("SMTP_PORT")
+)
+
 func generateMessage(to string, price float64) *gomail.Message {
 	t, _ := template.ParseFiles("templates/template.html")
 	var body bytes.Buffer
@@ -22,7 +29,7 @@ func generateMessage(to string, price float64) *gomail.Message {
 	})
 
 	message := gomail.NewMessage()
-	message.SetHeader("From", os.Getenv("HOST_EMAIL"))
+	message.SetHeader("From", HOST_EMAIL)
 	message.SetHeader("To", to)
 	message.SetHeader("Subject", "Cryptocurrency rate to UAH")
 	message.Embed("templates/logo.png")
@@ -33,9 +40,9 @@ func generateMessage(to string, price float64) *gomail.Message {
 }
 
 func SendEmail(price float64) {
-	port, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
-	dialer := gomail.NewDialer(os.Getenv("SMTP_HOST"), int(port),
-		os.Getenv("HOST_EMAIL"), os.Getenv("HOST_PASSWORD"))
+	port, _ := strconv.ParseInt(SMTP_PORT, 10, 64)
+	dialer := gomail.NewDialer(SMTP_HOST, int(port),
+		HOST_EMAIL, HOST_PASSWORD)
 
 	emails := getEmails()
 

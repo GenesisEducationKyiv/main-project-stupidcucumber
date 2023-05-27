@@ -7,24 +7,30 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 )
 
-func RequestPriceBinance() float64 {
-	base := "https://api.binance.com"
-	recource := "/api/v3/avgPrice"
-	params := url.Values{}
-	params.Add("symbol", "BTCUAH")
+const (
+	httpsBinance       = "https://api.binance.com"
+	httpsRoute         = "/api/v3/avgPrice"
+	convertionCurrency = "BTCUAH"
+)
 
-	u, _ := url.ParseRequestURI(base)
-	u.Path = recource
+func RequestPriceBinance() float64 {
+	params := url.Values{}
+	params.Add("symbol", convertionCurrency)
+
+	u, _ := url.ParseRequestURI(httpsBinance)
+	u.Path = httpsRoute
 	u.RawQuery = params.Encode()
 	finalUrl := fmt.Sprintf("%v", u)
 
 	exchangeRate, err := http.Get(finalUrl)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintf(os.Stderr, "Error occured while requesting GET from the %s: %v",
+			httpsBinance+httpsRoute, err)
 		return -1
 	}
 

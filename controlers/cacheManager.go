@@ -10,8 +10,12 @@ import (
 	"api/bitcoin-api/models"
 )
 
+var (
+	CACHE_PATH = os.Getenv("CACHE_PATH")
+)
+
 func init() {
-	file, err := os.Create(".cache")
+	file, err := os.Create(CACHE_PATH)
 	file.Close()
 
 	updatePrice()
@@ -29,7 +33,7 @@ func writeCache(cache models.CachedPrice) {
 		return
 	}
 
-	err = os.WriteFile(".cache", cached_json, 0766)
+	err = os.WriteFile(CACHE_PATH, cached_json, 0766)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during writing to a file '.cache': %v", err)
@@ -38,7 +42,7 @@ func writeCache(cache models.CachedPrice) {
 }
 
 func readCache() *models.CachedPrice {
-	fileContent, err := os.ReadFile(".cache")
+	fileContent, err := os.ReadFile(CACHE_PATH)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during reading from '.cache': %v", err)
