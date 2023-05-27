@@ -29,6 +29,7 @@ func RequestPriceBinance() float64 {
 	}
 
 	defer exchangeRate.Body.Close()
+
 	body, _ := ioutil.ReadAll(exchangeRate.Body)
 	var exchangeRateObj models.ExchangeRate
 	if err := json.Unmarshal(body, &exchangeRateObj); err != nil {
