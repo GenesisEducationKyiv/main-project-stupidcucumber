@@ -23,25 +23,20 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Print("No .env file found")
 	}
-	CACHE_PATH = os.Getenv("CACHE_PATH")
-	file, err := os.Create(CACHE_PATH)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during creation of the file: %v", err)
-	}
 
-	defer file.Close()
+	CACHE_PATH = os.Getenv("CACHE_PATH")
 }
 
 func writeCache(cache models.CachedPrice) {
 	cached_json, err := json.Marshal(cache)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during jsonifying CachedPrice: %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured during jsonifying CachedPrice: %v\n", err)
 		return
 	}
 
 	if err = os.WriteFile(CACHE_PATH, cached_json, 0766); err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during writing to a file '.cache': %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured during writing to a file '.cache': %v\n", err)
 		return
 	}
 }
@@ -49,15 +44,25 @@ func writeCache(cache models.CachedPrice) {
 func readCache() (*models.CachedPrice, error) {
 	fileContent, err := os.ReadFile(CACHE_PATH)
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during reading from %s: %v", CACHE_PATH, err)
-		return nil, err
+	if err != nil && os.IsNotExist(err) {
+		price, err := helpers.RequestPriceBinance()
+
+		if err != nil {
+			return &models.CachedPrice{}, err
+		}
+		CACHE_PATH = os.Getenv("CACHE_PATH")
+		file, _ := os.Create(CACHE_PATH)
+		file.Close()
+
+		writeCache(models.CachedPrice{Price: price, TimeStamp: time.Now()})
+
+		return &models.CachedPrice{Price: price, TimeStamp: time.Now()}, nil
 	}
 
 	var cache models.CachedPrice
 
 	if err = json.Unmarshal(fileContent, &cache); err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured during unmarshalling the cache: %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured during unmarshalling the cache: %v\n", err)
 		return nil, err
 	}
 
@@ -86,7 +91,7 @@ func GetPrice() (float64, error) {
 	cache, err := readCache()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading cache: %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured while reading cache: %v\n", err)
 		return float64(invalidPrice), err
 	}
 
@@ -97,7 +102,7 @@ func GetPrice() (float64, error) {
 	new_price, err := updatePrice()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v\n", err)
 		return float64(invalidPrice), err
 	}
 
