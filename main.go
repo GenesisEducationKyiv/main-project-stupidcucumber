@@ -40,9 +40,13 @@ func postSubscribe(c *gin.Context) {
 		return
 	}
 
-	controlers.AddEmail(newEmail)
+	err := controlers.AddEmail(newEmail)
 
-	c.IndentedJSON(200, newEmail)
+	if err == nil {
+		c.IndentedJSON(200, newEmail)
+	} else {
+		c.IndentedJSON(409, err.Error())
+	}
 }
 
 func postSendEmails(c *gin.Context) {

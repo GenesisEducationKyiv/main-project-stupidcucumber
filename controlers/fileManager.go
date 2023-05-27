@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
 
 	"github.com/joho/godotenv"
@@ -55,7 +56,7 @@ func FindEmail(email models.Email) bool {
 	return true
 }
 
-func AddEmail(email models.Email) {
+func AddEmail(email models.Email) error {
 	f, err := os.OpenFile(DATABASE_PATH,
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
 
@@ -63,10 +64,16 @@ func AddEmail(email models.Email) {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v", err)
-		return
+		return err
 	}
 
 	defer f.Close()
 
-	f.WriteString(email.Email + "\n")
+	if helpers.ValidateEmail(email) {
+		f.WriteString(email.Email + "\n")
+	} else {
+		return fmt.Errorf("provided email is invalid")
+	}
+
+	return nil
 }
