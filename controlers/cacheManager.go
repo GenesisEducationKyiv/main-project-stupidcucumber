@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	CACHE_PATH = os.Getenv("CACHE_PATH")
+	CACHE_PATH   = os.Getenv("CACHE_PATH")
+	invalidPrice = -1
 )
 
 func init() {
@@ -24,13 +25,11 @@ func init() {
 	}
 	CACHE_PATH = os.Getenv("CACHE_PATH")
 	file, err := os.Create(CACHE_PATH)
-	file.Close()
-
-	updatePrice()
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during creation of the file: %v", err)
 	}
+
+	defer file.Close()
 }
 
 func writeCache(cache models.CachedPrice) {
@@ -47,26 +46,31 @@ func writeCache(cache models.CachedPrice) {
 	}
 }
 
-func readCache() *models.CachedPrice {
+func readCache() (*models.CachedPrice, error) {
 	fileContent, err := os.ReadFile(CACHE_PATH)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during reading from %s: %v", CACHE_PATH, err)
-		return nil
+		return nil, err
 	}
 
 	var cache models.CachedPrice
 
 	if err = json.Unmarshal(fileContent, &cache); err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during unmarshalling the cache: %v", err)
-		return nil
+		return nil, err
 	}
 
-	return &cache
+	return &cache, nil
 }
 
-func updatePrice() float64 {
-	price := helpers.RequestPriceBinance()
+func updatePrice() (float64, error) {
+	price, err := helpers.RequestPriceBinance()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error occured while requesting price: %v\n", err)
+		return float64(invalidPrice), err
+	}
 
 	cache := models.CachedPrice{
 		TimeStamp: time.Now(),
@@ -75,17 +79,27 @@ func updatePrice() float64 {
 
 	writeCache(cache)
 
-	return price
+	return price, nil
 }
 
-func GetPrice() float64 {
-	cache := readCache()
+func GetPrice() (float64, error) {
+	cache, err := readCache()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error occured while reading cache: %v", err)
+		return float64(invalidPrice), err
+	}
 
 	if time.Now().Sub(cache.TimeStamp).Minutes() <= 10 && time.Now().Sub(cache.TimeStamp).Hours() < 1 {
-		return cache.Price
-	} else {
-		new_price := updatePrice()
-
-		return new_price
+		return cache.Price, nil
 	}
+
+	new_price, err := updatePrice()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v", err)
+		return float64(invalidPrice), err
+	}
+
+	return new_price, nil
 }

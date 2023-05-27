@@ -28,7 +28,7 @@ func getEmails() []string {
 	file, err := os.ReadFile(DATABASE_PATH)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v", err)
+		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v\n", err)
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func AddEmail(email models.Email) error {
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v", err)
+		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v\n", err)
 		return err
 	}
 
@@ -72,7 +72,7 @@ func AddEmail(email models.Email) error {
 	if helpers.ValidateEmail(email) && !findEmail(email) {
 		f.WriteString(email.Email + "\n")
 	} else {
-		return fmt.Errorf("provided email is invalid")
+		return fmt.Errorf("provided email is invalid\n")
 	}
 
 	return nil

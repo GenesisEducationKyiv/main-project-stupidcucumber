@@ -22,7 +22,13 @@ func init() {
 func getPrice(c *gin.Context) {
 	answer := make(map[string]float64)
 
-	price := controlers.GetPrice()
+	price, err := controlers.GetPrice()
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
 	answer["rate"] = price
 
 	c.IndentedJSON(http.StatusOK, answer)
@@ -44,7 +50,7 @@ func postSubscribe(c *gin.Context) {
 }
 
 func postSendEmails(c *gin.Context) {
-	price := controlers.GetPrice()
+	price, _ := controlers.GetPrice()
 
 	controlers.SendEmail(price)
 
