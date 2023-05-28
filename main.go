@@ -20,9 +20,9 @@ func init() {
 func main() {
 	router := gin.Default()
 
-	router.GET("/rate", handlers.GetPrice)
-	router.POST("/subscribe", handlers.PostSubscribe)
-	router.POST("/sendEmails", handlers.PostSendEmails)
+	router.GET("/api/rate", handlers.GetPrice)
+	router.POST("/api/subscribe", handlers.PostSubscribe)
+	router.POST("/api/sendEmails", handlers.PostSendEmails)
 
 	router.Run(":" + os.Getenv("APP_PORT"))
 }
