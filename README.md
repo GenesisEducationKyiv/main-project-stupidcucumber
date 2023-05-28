@@ -45,3 +45,7 @@ When `/api/sendEmails` endpoint is used system extracts all subscribed emails fr
 ## Caching the files
 
 To make things faster and use Binance API as little as possible I implemented cache system, which tracks when the last time I updated price and updates if price is too old. Each time user requests `/api/rate` or `/api/sendEmails` it checks the price and timestamp.
+
+## Chain responsibility
+
+To make API more stable, I request price from Coingeko API if Binance API is failed.
