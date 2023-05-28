@@ -23,8 +23,16 @@ docker compose up
 
 You also can run the program by using just:
 ```
+go mod download
 go run .
 ```
 
 # About bitcoin-api
 
+## Storing Emails
+
+To store emails I used go built-in package **os** to create, open and write files. To make code cleaner I implemented all logic in `fileManager.go` file located in folder `./controlers`. Eamils are stored in the file named **emails.db**, but you can easily change the name of the file in the **.env**. When someone tries to subscribe using `/subscribe` endpoint, I am validating the email that was sent and also checking whether the email is already in the database.
+
+## Caching the files
+
+## Sending emails
