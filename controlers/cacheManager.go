@@ -27,6 +27,20 @@ func init() {
 	CACHE_PATH = os.Getenv("CACHE_PATH")
 }
 
+func getPrice() (float64, error) {
+	price, err := helpers.RequestPriceBinance()
+
+	if err == nil {
+		return price, nil
+	}
+
+	err = nil
+
+	price, err = helpers.RequestPriceGeeko()
+
+	return price, err
+}
+
 func writeCache(cache models.CachedPrice) {
 	cached_json, err := json.Marshal(cache)
 
@@ -45,7 +59,7 @@ func readCache() (*models.CachedPrice, error) {
 	fileContent, err := os.ReadFile(CACHE_PATH)
 
 	if err != nil && os.IsNotExist(err) {
-		price, err := helpers.RequestPriceBinance()
+		price, err := getPrice()
 
 		if err != nil {
 			return &models.CachedPrice{}, err
@@ -70,7 +84,7 @@ func readCache() (*models.CachedPrice, error) {
 }
 
 func updatePrice() (float64, error) {
-	price, err := helpers.RequestPriceBinance()
+	price, err := getPrice()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while requesting price: %v\n", err)

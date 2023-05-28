@@ -13,7 +13,7 @@ import (
 
 const (
 	httpsBinance       = "https://api.binance.com"
-	httpsRoute         = "/api/v3/avgPrice"
+	httpsBinanceRoute  = "/api/v3/avgPrice"
 	convertionCurrency = "BTCUAH"
 	invalidPrice       = -1
 )
@@ -23,7 +23,7 @@ func RequestPriceBinance() (float64, error) {
 	params.Add("symbol", convertionCurrency)
 
 	u, err := url.ParseRequestURI(httpsBinance)
-	u.Path = httpsRoute
+	u.Path = httpsBinanceRoute
 	u.RawQuery = params.Encode()
 	finalUrl := fmt.Sprintf("%v", u)
 
@@ -36,7 +36,7 @@ func RequestPriceBinance() (float64, error) {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while requesting GET from the %s: %v\n",
-			httpsBinance+httpsRoute, err)
+			httpsBinance+httpsBinanceRoute, err)
 		return invalidPrice, err
 	}
 
