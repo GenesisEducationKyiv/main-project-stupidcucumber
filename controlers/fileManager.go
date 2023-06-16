@@ -70,7 +70,10 @@ func AddEmail(email models.Email) error {
 	defer f.Close()
 
 	if helpers.ValidateEmail(email) && !findEmail(email) {
-		f.WriteString(email.Email + "\n")
+		if _, err := f.WriteString(email.Email + "\n"); err != nil {
+			return fmt.Errorf("the writing to the file went wrong\n")
+		}
+
 	} else {
 		return fmt.Errorf("provided email is invalid\n")
 	}

@@ -24,5 +24,5 @@ func main() {
 	router.POST("/api/subscribe", handlers.PostSubscribe)
 	router.POST("/api/sendEmails", handlers.PostSendEmails)
 
-	router.Run(":" + os.Getenv("APP_PORT"))
+	log.Fatal(router.Run(":" + os.Getenv("APP_PORT")))
 }

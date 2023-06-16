@@ -4,7 +4,7 @@ import (
 	"api/bitcoin-api/models"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -39,7 +39,7 @@ func RequestPriceGeeko() (float64, error) {
 	}
 
 	defer exchangeRate.Body.Close()
-	body, err := ioutil.ReadAll(exchangeRate.Body)
+	body, err := io.ReadAll(exchangeRate.Body)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading the request body: %v\n", err)

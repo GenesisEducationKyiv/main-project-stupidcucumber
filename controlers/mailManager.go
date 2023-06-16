@@ -31,15 +31,17 @@ func init() {
 	SMTP_PORT = os.Getenv("SMTP_PORT")
 }
 
-func generateMessage(to string, price float64) *gomail.Message {
+func generateMessage(to string, price float64) (*gomail.Message, error) {
 	t, _ := template.ParseFiles("templates/template.html")
 	var body bytes.Buffer
 
-	t.Execute(&body, struct {
+	if err := t.Execute(&body, struct {
 		Rate string
 	}{
 		Rate: fmt.Sprintf("%f", price),
-	})
+	}); err != nil {
+		return nil, fmt.Errorf("error occured during generating message: %v\n", err)
+	}
 
 	message := gomail.NewMessage()
 	message.SetHeader("From", HOST_EMAIL)
@@ -49,7 +51,7 @@ func generateMessage(to string, price float64) *gomail.Message {
 	message.Embed("templates/icons8-bitcoin-250.png")
 	message.SetBody("text/html", body.String())
 
-	return message
+	return message, nil
 }
 
 func SendEmail(price float64) {
@@ -61,9 +63,12 @@ func SendEmail(price float64) {
 	fmt.Println("Emails has been sent!")
 
 	for i := 0; i < len(emails); i++ {
-		var message gomail.Message = *generateMessage(emails[i], price)
+		message, err := generateMessage(emails[i], price)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error while sending to %s occured: %v", emails[i], err)
+		}
 
-		if err := dialer.DialAndSend(&message); err != nil {
+		if err := dialer.DialAndSend(message); err != nil {
 			fmt.Fprintf(os.Stderr, "Error while sending to %s occured: %v", emails[i], err)
 		}
 	}

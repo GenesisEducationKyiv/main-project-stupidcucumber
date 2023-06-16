@@ -34,8 +34,6 @@ func getPrice() (float64, error) {
 		return price, nil
 	}
 
-	err = nil
-
 	price, err = helpers.RequestPriceGeeko()
 
 	return price, err
@@ -109,7 +107,7 @@ func GetPrice() (float64, error) {
 		return float64(invalidPrice), err
 	}
 
-	if time.Now().Sub(cache.TimeStamp).Minutes() <= 10 && time.Now().Sub(cache.TimeStamp).Hours() < 1 {
+	if time.Since(cache.TimeStamp).Minutes() <= 10 && time.Since(cache.TimeStamp).Hours() < 1 {
 		return cache.Price, nil
 	}
 
