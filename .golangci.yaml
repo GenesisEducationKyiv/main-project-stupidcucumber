@@ -8,4 +8,4 @@ linters:
     - dupl
     - errname
     - forbidigo
-    - gofumpt
+    - goimports
