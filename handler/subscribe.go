@@ -1,9 +1,9 @@
-package handlers
+package handler
 
 import (
 	"net/http"
 
-	"api/bitcoin-api/controlers"
+	"api/bitcoin-api/controller"
 	"api/bitcoin-api/models"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ func PostSubscribe(c *gin.Context) {
 		return
 	}
 
-	if err := controlers.AddEmail(newEmail); err == nil {
+	if err := controller.AddEmail(newEmail); err == nil {
 		c.IndentedJSON(http.StatusOK, newEmail)
 	} else {
 		c.IndentedJSON(http.StatusConflict, err.Error())

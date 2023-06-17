@@ -1,9 +1,9 @@
-package handlers
+package handler
 
 import (
 	"net/http"
 
-	"api/bitcoin-api/controlers"
+	"api/bitcoin-api/controller"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +11,7 @@ import (
 func GetPrice(c *gin.Context) {
 	answer := make(map[string]float64)
 
-	price, err := controlers.GetPrice()
+	price, err := controller.GetPrice()
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

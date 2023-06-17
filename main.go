@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"api/bitcoin-api/handlers"
+	"api/bitcoin-api/handler"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -19,9 +19,9 @@ func init() {
 func main() {
 	router := gin.Default()
 
-	router.GET("/api/rate", handlers.GetPrice)
-	router.POST("/api/subscribe", handlers.PostSubscribe)
-	router.POST("/api/sendEmails", handlers.PostSendEmails)
+	router.GET("/api/rate", handler.GetPrice)
+	router.POST("/api/subscribe", handler.PostSubscribe)
+	router.POST("/api/sendEmails", handler.PostSendEmails)
 
 	log.Fatal(router.Run(":" + os.Getenv("APP_PORT")))
 }
