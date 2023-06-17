@@ -1,20 +1,15 @@
 package helpers
 
 import (
-	"api/bitcoin-api/models"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
+
+	"api/bitcoin-api/models"
 )
-
-type Rates struct {
-}
-
-type Rate struct {
-}
 
 const (
 	httpsGeeko      = "https://api.coingecko.com"
@@ -32,7 +27,6 @@ func RequestPriceGeeko() (float64, error) {
 	}
 
 	exchangeRate, err := http.Get(finalUrl)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while fetching price from Geeko: %v\n", err)
 		return invalidPrice, err
@@ -40,7 +34,6 @@ func RequestPriceGeeko() (float64, error) {
 
 	defer exchangeRate.Body.Close()
 	body, err := io.ReadAll(exchangeRate.Body)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading the request body: %v\n", err)
 		return invalidPrice, err

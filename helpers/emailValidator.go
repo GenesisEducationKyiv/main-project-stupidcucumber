@@ -1,8 +1,9 @@
 package helpers
 
 import (
-	"api/bitcoin-api/models"
 	"net/mail"
+
+	"api/bitcoin-api/models"
 )
 
 func ValidateEmail(email models.Email) bool {

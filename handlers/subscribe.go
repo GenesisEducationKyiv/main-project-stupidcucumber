@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"api/bitcoin-api/controlers"
 	"api/bitcoin-api/models"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )

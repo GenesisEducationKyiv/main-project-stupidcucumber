@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"api/bitcoin-api/models"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +8,8 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+
+	"api/bitcoin-api/models"
 )
 
 const (
@@ -33,7 +34,6 @@ func RequestPriceBinance() (float64, error) {
 	}
 
 	exchangeRate, err := http.Get(finalUrl)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while requesting GET from the %s: %v\n",
 			httpsBinance+httpsBinanceRoute, err)
@@ -43,7 +43,6 @@ func RequestPriceBinance() (float64, error) {
 	defer exchangeRate.Body.Close()
 
 	body, err := io.ReadAll(exchangeRate.Body)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading the request body: %v\n", err)
 		return invalidPrice, err
@@ -51,7 +50,7 @@ func RequestPriceBinance() (float64, error) {
 
 	var exchangeRateObj models.ExchangeRate
 	if err := json.Unmarshal(body, &exchangeRateObj); err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintf(os.Stderr, "unmarshalling exchange rate object: %v", err)
 		return invalidPrice, err
 	}
 

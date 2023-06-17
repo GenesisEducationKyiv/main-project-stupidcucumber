@@ -12,12 +12,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var (
-	DATABASE_PATH = os.Getenv("DATABASE_PATH")
-)
+var DATABASE_PATH = os.Getenv("DATABASE_PATH")
 
 func init() {
-
 	if err := godotenv.Load(); err != nil {
 		log.Print("No .env file found")
 	}
@@ -26,7 +23,6 @@ func init() {
 
 func getEmails() []string {
 	file, err := os.ReadFile(DATABASE_PATH)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v\n", err)
 		return nil
@@ -58,14 +54,11 @@ func findEmail(email models.Email) bool {
 
 func AddEmail(email models.Email) error {
 	f, err := os.OpenFile(DATABASE_PATH,
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0744)
-
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o744)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v\n", err)
 		return err
 	}
-
-	fmt.Printf("Email added: %s", email.Email)
 
 	defer f.Close()
 
@@ -73,7 +66,6 @@ func AddEmail(email models.Email) error {
 		if _, err := f.WriteString(email.Email + "\n"); err != nil {
 			return fmt.Errorf("the writing to the file went wrong\n")
 		}
-
 	} else {
 		return fmt.Errorf("provided email is invalid\n")
 	}

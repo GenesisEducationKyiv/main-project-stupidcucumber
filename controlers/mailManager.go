@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-
 	"text/template"
 
 	"github.com/joho/godotenv"
@@ -60,7 +59,6 @@ func SendEmail(price float64) {
 		HOST_EMAIL, HOST_PASSWORD)
 
 	emails := getEmails()
-	fmt.Println("Emails has been sent!")
 
 	for i := 0; i < len(emails); i++ {
 		message, err := generateMessage(emails[i], price)
