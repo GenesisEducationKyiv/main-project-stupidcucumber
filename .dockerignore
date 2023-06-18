@@ -1,0 +1,8 @@
+.gitignore
+.git
+email.db
+README.md
+LICENSE
+Dockerfile
+.cache
+.DS_Store
