@@ -26,13 +26,13 @@ func init() {
 }
 
 func writeCache(cache models.CachedPrice) {
-	cached_json, err := json.Marshal(cache)
+	cachedJSON, err := json.Marshal(cache)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during jsonifying CachedPrice: %v\n", err)
 		return
 	}
 
-	if err = os.WriteFile(CACHE_PATH, cached_json, 0o766); err != nil {
+	if err = os.WriteFile(CACHE_PATH, cachedJSON, 0o766); err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured during writing to a file '.cache': %v\n", err)
 		return
 	}

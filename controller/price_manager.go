@@ -48,11 +48,11 @@ func GetPrice() (float64, error) {
 		return cache.Price, nil
 	}
 
-	new_price, err := updatePrice()
+	newPrice, err := updatePrice()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v\n", err)
 		return float64(invalidPrice), err
 	}
 
-	return new_price, nil
+	return newPrice, nil
 }
