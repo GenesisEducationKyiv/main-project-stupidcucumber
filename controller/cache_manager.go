@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
 
 	"github.com/joho/godotenv"
@@ -24,18 +23,6 @@ func init() {
 	}
 
 	CACHE_PATH = os.Getenv("CACHE_PATH")
-}
-
-func getPrice() (float64, error) {
-	price, err := helpers.RequestPriceBinance()
-
-	if err == nil {
-		return price, nil
-	}
-
-	price, err = helpers.RequestPriceGeeko()
-
-	return price, err
 }
 
 func writeCache(cache models.CachedPrice) {
@@ -76,41 +63,4 @@ func readCache() (*models.CachedPrice, error) {
 	}
 
 	return &cache, nil
-}
-
-func updatePrice() (float64, error) {
-	price, err := getPrice()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while requesting price: %v\n", err)
-		return float64(invalidPrice), err
-	}
-
-	cache := models.CachedPrice{
-		TimeStamp: time.Now(),
-		Price:     price,
-	}
-
-	writeCache(cache)
-
-	return price, nil
-}
-
-func GetPrice() (float64, error) {
-	cache, err := readCache()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading cache: %v\n", err)
-		return float64(invalidPrice), err
-	}
-
-	if time.Since(cache.TimeStamp).Minutes() <= 10 && time.Since(cache.TimeStamp).Hours() < 1 {
-		return cache.Price, nil
-	}
-
-	new_price, err := updatePrice()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v\n", err)
-		return float64(invalidPrice), err
-	}
-
-	return new_price, nil
 }
