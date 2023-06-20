@@ -30,12 +30,12 @@ func (p *BinancePrice) GetPrice() (float64, error) {
 	finalURL := fmt.Sprintf("%v", u)
 
 	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while parsing the URL: %v\n", err)
+		return invalidPrice, fmt.Errorf("Error occured while parsing the URL: %w", err)
 	}
 
 	exchangeRate, err := http.Get(finalURL)
 	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while requesting GET from the %s: %v\n",
+		return invalidPrice, fmt.Errorf("Error occured while requesting GET from the %s: %w",
 			httpsBinance+httpsBinanceRoute, err)
 	}
 
@@ -43,11 +43,11 @@ func (p *BinancePrice) GetPrice() (float64, error) {
 
 	body, err := io.ReadAll(exchangeRate.Body)
 	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while reading the request body: %v\n", err)
+		return invalidPrice, fmt.Errorf("Error occured while reading the request body: %w", err)
 	}
 
 	if err := json.Unmarshal(body, p); err != nil {
-		return invalidPrice, fmt.Errorf("unmarshalling exchange rate object: %v", err)
+		return invalidPrice, fmt.Errorf("unmarshalling exchange rate object: %w", err)
 	}
 
 	result, _ := strconv.ParseFloat(p.Price, 64)

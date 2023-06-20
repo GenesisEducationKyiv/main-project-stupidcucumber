@@ -22,7 +22,7 @@ func generateMessage(to string, price float64) (*gomail.Message, error) {
 	}{
 		Rate: fmt.Sprintf("%f", price),
 	}); err != nil {
-		return nil, fmt.Errorf("error occured during generating message: %v\n", err)
+		return nil, fmt.Errorf("error occured during generating message: %w", err)
 	}
 
 	message := gomail.NewMessage()

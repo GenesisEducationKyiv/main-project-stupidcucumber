@@ -26,7 +26,7 @@ const (
 func (p *CoingeckoPrice) GetPrice() (float64, error) {
 	u, err := url.ParseRequestURI(httpsGeeko)
 	u.Path = httpsGeekoRoute
-	finalURL := fmt.Sprintf("%v", u)
+	finalURL := fmt.Sprintf("%s", u)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error occured while parsing URI request: %v\n", err)

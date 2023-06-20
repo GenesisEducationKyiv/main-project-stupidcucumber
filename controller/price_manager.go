@@ -4,7 +4,6 @@ import (
 	"api/bitcoin-api/models"
 	"api/bitcoin-api/providers"
 	"fmt"
-	"os"
 	"time"
 )
 
@@ -27,8 +26,7 @@ func getPrice() (float64, error) {
 func updatePrice() (float64, error) {
 	price, err := getPrice()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while requesting price: %v\n", err)
-		return float64(invalidPrice), err
+		return float64(invalidPrice), fmt.Errorf("updating price: %w", err)
 	}
 
 	cache := models.CachedPrice{
@@ -44,8 +42,7 @@ func updatePrice() (float64, error) {
 func GetPrice() (float64, error) {
 	cache, err := readCache()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading cache: %v\n", err)
-		return float64(invalidPrice), err
+		return float64(invalidPrice), fmt.Errorf("getting price: %w", err)
 	}
 
 	if time.Since(cache.TimeStamp).Minutes() <= 10 && time.Since(cache.TimeStamp).Hours() < 1 {
@@ -54,8 +51,7 @@ func GetPrice() (float64, error) {
 
 	newPrice, err := updatePrice()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while updating price: %v\n", err)
-		return float64(invalidPrice), err
+		return float64(invalidPrice), fmt.Errorf("getting price: %w", err)
 	}
 
 	return newPrice, nil
