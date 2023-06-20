@@ -1,15 +1,19 @@
 package controller
 
 import (
-	"api/bitcoin-api/interfaces"
 	"api/bitcoin-api/models"
+	"api/bitcoin-api/providers"
 	"fmt"
 	"os"
 	"time"
 )
 
+var (
+	invalidPrice = -1
+)
+
 func getPrice() (float64, error) {
-	prices := []interfaces.Pricable{&models.BinancePrice{}, &models.CoingeckoPrice{}}
+	prices := []providers.PriceProvider{&models.BinancePrice{}, &models.CoingeckoPrice{}}
 
 	for i := 0; i < len(prices); i++ {
 		if price, err := prices[i].GetPrice(); err == nil {

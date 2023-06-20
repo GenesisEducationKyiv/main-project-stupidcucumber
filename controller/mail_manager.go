@@ -1,36 +1,19 @@
 package controller
 
 import (
+	"api/bitcoin-api/models"
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"text/template"
 
-	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 )
 
-var (
-	HOST_EMAIL    = os.Getenv("HOST_EMAIL")
-	HOST_PASSWORD = os.Getenv("HOST_PASSWORD")
-	SMTP_HOST     = os.Getenv("SMTP_HOST")
-	SMTP_PORT     = os.Getenv("SMTP_PORT")
-)
-
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
-	}
-
-	HOST_EMAIL = os.Getenv("HOST_EMAIL")
-	HOST_PASSWORD = os.Getenv("HOST_PASSWORD")
-	SMTP_HOST = os.Getenv("SMTP_HOST")
-	SMTP_PORT = os.Getenv("SMTP_PORT")
-}
-
 func generateMessage(to string, price float64) (*gomail.Message, error) {
+	emailCredentials := models.NewEmailCredentials()
+
 	t, _ := template.ParseFiles("templates/template.html")
 	var body bytes.Buffer
 
@@ -43,7 +26,7 @@ func generateMessage(to string, price float64) (*gomail.Message, error) {
 	}
 
 	message := gomail.NewMessage()
-	message.SetHeader("From", HOST_EMAIL)
+	message.SetHeader("From", emailCredentials.HostEmail)
 	message.SetHeader("To", to)
 	message.SetHeader("Subject", "Cryptocurrency rate to UAH")
 	message.Embed("templates/logo.png")
@@ -53,12 +36,16 @@ func generateMessage(to string, price float64) (*gomail.Message, error) {
 	return message, nil
 }
 
-func SendEmail(price float64) {
-	port, _ := strconv.ParseInt(SMTP_PORT, 10, 64)
-	dialer := gomail.NewDialer(SMTP_HOST, int(port),
-		HOST_EMAIL, HOST_PASSWORD)
+func SendEmail(price float64) error {
+	emailCredentials := models.NewEmailCredentials()
+	port, _ := strconv.ParseInt(emailCredentials.PortSMTP, 10, 64)
+	dialer := gomail.NewDialer(emailCredentials.HostSMTP, int(port),
+		emailCredentials.HostEmail, emailCredentials.HostPassword)
 
-	emails := getEmails()
+	emails, err := getEmails()
+	if err != nil {
+		return fmt.Errorf("sending emails: %w", err)
+	}
 
 	for i := 0; i < len(emails); i++ {
 		message, err := generateMessage(emails[i], price)
@@ -70,4 +57,6 @@ func SendEmail(price float64) {
 			fmt.Fprintf(os.Stderr, "Error while sending to %s occured: %v", emails[i], err)
 		}
 	}
+
+	return nil
 }

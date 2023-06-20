@@ -2,30 +2,22 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
 	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
-
-	"github.com/joho/godotenv"
 )
 
-var DATABASE_PATH = os.Getenv("DATABASE_PATH")
-
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
-	}
-	DATABASE_PATH = os.Getenv("DATABASE_PATH")
-}
-
-func getEmails() []string {
-	file, err := os.ReadFile(DATABASE_PATH)
+func getEmails() ([]string, error) {
+	path, err := helpers.GetEnvVariable("DATABASE_PATH")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error while extracting emails: %v\n", err)
-		return nil
+		return nil, fmt.Errorf("extracting emails: %w", err)
+	}
+
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading file %s: %w", path, err)
 	}
 
 	unfilteredEmails := strings.Split(string(file), "\n")
@@ -37,37 +29,48 @@ func getEmails() []string {
 		}
 	}
 
-	return filteredEmails
+	return filteredEmails, nil
 }
 
-func findEmail(email models.Email) bool {
-	var emails []string = getEmails()
+func findEmail(email models.Email) (bool, error) {
+	emails, err := getEmails()
+	if err != nil {
+		return false, fmt.Errorf("searching for the email %s: %w", email.Email, err)
+	}
 
 	for i := 0; i < len(emails); i++ {
 		if emails[i] == email.Email {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
 func AddEmail(email models.Email) error {
-	f, err := os.OpenFile(DATABASE_PATH,
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o744)
+	path, err := helpers.GetEnvVariable("DATABASE_PATH")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading adding the Email: %v\n", err)
-		return err
+		return fmt.Errorf("getting .env variable: %w", err)
+	}
+
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o744)
+	if err != nil {
+		return fmt.Errorf("opening the file %s: %w", path, err)
 	}
 
 	defer f.Close()
 
-	if helpers.ValidateEmail(email) && !findEmail(email) {
+	isPresent, err := findEmail(email)
+	if err != nil {
+		return fmt.Errorf("adding email %s: %w", email.Email, err)
+	}
+
+	if helpers.ValidateEmail(email) && !isPresent {
 		if _, err := f.WriteString(email.Email + "\n"); err != nil {
-			return fmt.Errorf("the writing to the file went wrong\n")
+			return fmt.Errorf("the writing to the file went wrong: %w", err)
 		}
 	} else {
-		return fmt.Errorf("provided email is invalid\n")
+		return fmt.Errorf("provided email is invalid")
 	}
 
 	return nil
