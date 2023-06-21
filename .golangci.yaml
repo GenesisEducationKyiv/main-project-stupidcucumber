@@ -9,3 +9,6 @@ linters:
     - errname
     - forbidigo
     - goimports
+    - gosimple
+    - stylecheck
+    - revive

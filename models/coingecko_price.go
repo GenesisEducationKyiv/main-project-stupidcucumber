@@ -19,6 +19,7 @@ type CoingeckoPrice struct {
 const (
 	httpsGeeko      = "https://api.coingecko.com"
 	httpsGeekoRoute = "/api/v3/exchange_rates"
+	currency        = "uah"
 )
 
 func (p *CoingeckoPrice) GetPrice() (float64, error) {
@@ -33,7 +34,7 @@ func (p *CoingeckoPrice) GetPrice() (float64, error) {
 		return invalidPrice, err
 	}
 
-	value := p.Rates["uah"].Value
+	value := p.Rates[currency].Value
 
 	return value, nil
 }
