@@ -26,10 +26,10 @@ func (p *BinancePrice) GetPrice() (float64, error) {
 	u, err := url.ParseRequestURI(httpsBinance)
 	u.Path = httpsBinanceRoute
 	u.RawQuery = params.Encode()
-	finalURL := fmt.Sprintf("%s", u)
+	finalURL := u.String()
 
 	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while parsing the URL: %w", err)
+		return invalidPrice, fmt.Errorf("error occured while parsing the URL: %w", err)
 	}
 
 	body, err := helpers.LoadURL(finalURL)

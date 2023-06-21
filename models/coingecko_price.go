@@ -30,7 +30,7 @@ func (p *CoingeckoPrice) GetPrice() (float64, error) {
 
 	err = json.Unmarshal(body, p)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while unmarshalling json: %v", err)
+		fmt.Fprintf(os.Stderr, "error occured while unmarshalling json: %v", err)
 		return invalidPrice, err
 	}
 

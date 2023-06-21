@@ -20,7 +20,7 @@ func getPrice() (float64, error) {
 		}
 	}
 
-	return float64(invalidPrice), fmt.Errorf("Servers from where prices being fetched are down")
+	return float64(invalidPrice), fmt.Errorf("servers from where prices being fetched are down")
 }
 
 func updatePrice() (float64, error) {
