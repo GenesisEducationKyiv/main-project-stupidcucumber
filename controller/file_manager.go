@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -53,7 +54,7 @@ func AddEmail(email models.Email) error {
 		return fmt.Errorf("getting .env variable: %w", err)
 	}
 
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o744)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, fs.ModeDir)
 	if err != nil {
 		return fmt.Errorf("opening the file %s: %w", path, err)
 	}
