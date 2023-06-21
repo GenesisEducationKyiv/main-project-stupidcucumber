@@ -1,11 +1,9 @@
 package models
 
 import (
+	"api/bitcoin-api/helpers"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"os"
 )
 
@@ -24,26 +22,9 @@ const (
 )
 
 func (p *CoingeckoPrice) GetPrice() (float64, error) {
-	u, err := url.ParseRequestURI(httpsGeeko)
-	u.Path = httpsGeekoRoute
-	finalURL := fmt.Sprintf("%s", u)
-
+	body, err := helpers.LoadURL(httpsGeeko + httpsGeekoRoute)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while parsing URI request: %v\n", err)
-		return invalidPrice, err
-	}
-
-	exchangeRate, err := http.Get(finalURL)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while fetching price from Geeko: %v\n", err)
-		return invalidPrice, err
-	}
-
-	defer exchangeRate.Body.Close()
-	body, err := io.ReadAll(exchangeRate.Body)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error occured while reading the request body: %v\n", err)
-		return invalidPrice, err
+		return invalidPrice, fmt.Errorf("getting coingecko price: %w", err)
 	}
 
 	err = json.Unmarshal(body, p)
@@ -52,7 +33,6 @@ func (p *CoingeckoPrice) GetPrice() (float64, error) {
 		return invalidPrice, err
 	}
 
-	// Extract the "value" field
 	value := p.Rates["uah"].Value
 
 	return value, nil

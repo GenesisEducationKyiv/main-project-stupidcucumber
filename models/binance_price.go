@@ -1,10 +1,9 @@
 package models
 
 import (
+	"api/bitcoin-api/helpers"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 	"strconv"
 )
@@ -14,7 +13,7 @@ type BinancePrice struct {
 }
 
 const (
-	httpsBinance       = "https://api.binancee.com"
+	httpsBinance       = "https://api.binance.com"
 	httpsBinanceRoute  = "/api/v3/avgPrice"
 	convertionCurrency = "BTCUAH"
 	invalidPrice       = -1
@@ -27,23 +26,15 @@ func (p *BinancePrice) GetPrice() (float64, error) {
 	u, err := url.ParseRequestURI(httpsBinance)
 	u.Path = httpsBinanceRoute
 	u.RawQuery = params.Encode()
-	finalURL := fmt.Sprintf("%v", u)
+	finalURL := fmt.Sprintf("%s", u)
 
 	if err != nil {
 		return invalidPrice, fmt.Errorf("Error occured while parsing the URL: %w", err)
 	}
 
-	exchangeRate, err := http.Get(finalURL)
+	body, err := helpers.LoadURL(finalURL)
 	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while requesting GET from the %s: %w",
-			httpsBinance+httpsBinanceRoute, err)
-	}
-
-	defer exchangeRate.Body.Close()
-
-	body, err := io.ReadAll(exchangeRate.Body)
-	if err != nil {
-		return invalidPrice, fmt.Errorf("Error occured while reading the request body: %w", err)
+		return invalidPrice, fmt.Errorf("requesting URL: %w", err)
 	}
 
 	if err := json.Unmarshal(body, p); err != nil {

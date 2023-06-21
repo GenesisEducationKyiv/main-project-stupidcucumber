@@ -2,12 +2,10 @@ package helpers
 
 import (
 	"net/mail"
-
-	"api/bitcoin-api/models"
 )
 
-func ValidateEmail(email models.Email) bool {
-	if _, err := mail.ParseAddress(email.Email); err != nil {
+func ValidateEmail(email string) bool {
+	if _, err := mail.ParseAddress(email); err != nil {
 		return false
 	}
 
