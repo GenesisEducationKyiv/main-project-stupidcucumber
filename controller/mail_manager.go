@@ -14,7 +14,10 @@ import (
 func generateMessage(to string, price float64) (*gomail.Message, error) {
 	emailCredentials := models.NewEmailCredentials()
 
-	t, _ := template.ParseFiles("templates/template.html")
+	t, err := template.ParseFiles("templates/template.html")
+	if err != nil {
+		return nil, fmt.Errorf("generating message: %w", err)
+	}
 	var body bytes.Buffer
 
 	if err := t.Execute(&body, struct {
@@ -38,7 +41,11 @@ func generateMessage(to string, price float64) (*gomail.Message, error) {
 
 func SendEmail(price float64) error {
 	emailCredentials := models.NewEmailCredentials()
-	port, _ := strconv.ParseInt(emailCredentials.PortSMTP, 10, 64)
+	port, err := strconv.ParseInt(emailCredentials.PortSMTP, 10, 64)
+	if err != nil {
+		return fmt.Errorf("sending email: %w", err)
+	}
+
 	dialer := gomail.NewDialer(emailCredentials.HostSMTP, int(port),
 		emailCredentials.HostEmail, emailCredentials.HostPassword)
 
