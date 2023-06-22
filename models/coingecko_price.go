@@ -1,7 +1,7 @@
 package models
 
 import (
-	"api/bitcoin-api/helpers"
+	"api/bitcoin-api/tools"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -23,7 +23,7 @@ const (
 )
 
 func (p *CoingeckoPrice) GetPrice() (float64, error) {
-	body, err := helpers.LoadURL(httpsGeeko + httpsGeekoRoute)
+	body, err := tools.LoadURL(httpsGeeko + httpsGeekoRoute)
 	if err != nil {
 		return invalidPrice, fmt.Errorf("getting coingecko price: %w", err)
 	}

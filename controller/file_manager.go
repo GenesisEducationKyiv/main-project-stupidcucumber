@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
+	"api/bitcoin-api/tools"
 )
 
 func getEmails() ([]string, error) {
-	path, err := helpers.GetEnvVariable("DATABASE_PATH")
+	path, err := tools.GetEnvVariable("DATABASE_PATH")
 	if err != nil {
 		return nil, fmt.Errorf("extracting emails: %w", err)
 	}
@@ -48,7 +48,7 @@ func findEmail(email models.Email) (bool, error) {
 }
 
 func AddEmail(email models.Email) error {
-	path, err := helpers.GetEnvVariable("DATABASE_PATH")
+	path, err := tools.GetEnvVariable("DATABASE_PATH")
 	if err != nil {
 		return fmt.Errorf("getting .env variable: %w", err)
 	}
@@ -65,7 +65,7 @@ func AddEmail(email models.Email) error {
 		return fmt.Errorf("adding email %s: %w", email.Email, err)
 	}
 
-	if !helpers.ValidateEmail(email.Email) || isPresent {
+	if !tools.ValidateEmail(email.Email) || isPresent {
 		return fmt.Errorf("provided email is invalid")
 	}
 

@@ -6,12 +6,12 @@ import (
 	"os"
 	"time"
 
-	"api/bitcoin-api/helpers"
 	"api/bitcoin-api/models"
+	"api/bitcoin-api/tools"
 )
 
 func writeCache(cache models.CachedPrice) error {
-	path, err := helpers.GetEnvVariable("CACHE_PATH")
+	path, err := tools.GetEnvVariable("CACHE_PATH")
 	if err != nil {
 		return fmt.Errorf("getting .env vavriable in writeCahce: %w", err)
 	}
@@ -29,7 +29,7 @@ func writeCache(cache models.CachedPrice) error {
 }
 
 func readCache() (*models.CachedPrice, error) {
-	path, err := helpers.GetEnvVariable("CACHE_PATH")
+	path, err := tools.GetEnvVariable("CACHE_PATH")
 	if err != nil {
 		return nil, fmt.Errorf("reading cache: %w", err)
 	}

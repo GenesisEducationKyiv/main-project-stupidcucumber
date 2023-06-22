@@ -1,4 +1,4 @@
-package helpers
+package tools
 
 import (
 	"net/mail"
