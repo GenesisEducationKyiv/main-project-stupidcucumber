@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"strings"
 
@@ -54,7 +53,7 @@ func AddEmail(email models.Email) error {
 		return fmt.Errorf("getting .env variable: %w", err)
 	}
 
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, fs.ModeDir)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 	if err != nil {
 		return fmt.Errorf("opening the file %s: %w", path, err)
 	}
@@ -66,12 +65,12 @@ func AddEmail(email models.Email) error {
 		return fmt.Errorf("adding email %s: %w", email.Email, err)
 	}
 
-	if helpers.ValidateEmail(email.Email) && !isPresent {
-		if _, err := f.WriteString(email.Email + "\n"); err != nil {
-			return fmt.Errorf("the writing to the file went wrong: %w", err)
-		}
-	} else {
+	if !helpers.ValidateEmail(email.Email) || isPresent {
 		return fmt.Errorf("provided email is invalid")
+	}
+
+	if _, err := f.WriteString(email.Email + "\n"); err != nil {
+		return fmt.Errorf("the writing to the file went wrong: %w", err)
 	}
 
 	return nil
