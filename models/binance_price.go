@@ -1,7 +1,7 @@
 package models
 
 import (
-	"api/bitcoin-api/tools"
+	"api/bitcoin-api/tools/loaders"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -32,7 +32,7 @@ func (p *BinancePrice) GetPrice() (float64, error) {
 		return invalidPrice, fmt.Errorf("error occured while parsing the URL: %w", err)
 	}
 
-	body, err := tools.LoadURL(finalURL)
+	body, err := loaders.LoadURL(finalURL)
 	if err != nil {
 		return invalidPrice, fmt.Errorf("requesting URL: %w", err)
 	}
