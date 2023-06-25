@@ -9,18 +9,18 @@ import (
 )
 
 const (
-	testFileName = "test.cache"
+	testFileNameCache = "test.cache"
 )
 
-func cleanupTests() {
-	if _, err := os.Stat(testFileName); err == nil {
-		os.Remove(testFileName)
+func cleanupTestsFileCache() {
+	if _, err := os.Stat(testFileNameCache); err == nil {
+		os.Remove(testFileNameCache)
 	}
 }
 
 func TestFileCacheWrite(t *testing.T) {
 	database := models.FileCache{
-		FileName: testFileName,
+		FileName: testFileNameCache,
 	}
 	expectedTestData := models.CachedPrice{
 		Price:     1000000,
@@ -33,7 +33,7 @@ func TestFileCacheWrite(t *testing.T) {
 		t.Errorf("unexpected error encountered during writing to the file: %v", err)
 	}
 
-	body, err := os.ReadFile(testFileName)
+	body, err := os.ReadFile(testFileNameCache)
 	if err != nil {
 		t.Errorf("unexpected error encountered during reading file: %v", err)
 	}
@@ -47,12 +47,12 @@ func TestFileCacheWrite(t *testing.T) {
 		t.Errorf("actual data (%v) written to the file is different from what is expected (%v)", actualTestData, expectedTestData)
 	}
 
-	t.Cleanup(cleanupTests)
+	t.Cleanup(cleanupTestsFileCache)
 }
 
 func TestFileCacheRead(t *testing.T) {
 	database := models.FileCache{
-		FileName: testFileName,
+		FileName: testFileNameCache,
 	}
 	expectedTestData := models.CachedPrice{
 		Price:     1000000,
@@ -72,5 +72,5 @@ func TestFileCacheRead(t *testing.T) {
 		t.Errorf("actual data (%#v) is different from expected (%#v)", *actualTestData, expectedTestData)
 	}
 
-	t.Cleanup(cleanupTests)
+	t.Cleanup(cleanupTestsFileCache)
 }

@@ -9,19 +9,13 @@ import (
 )
 
 type FileDatabase struct {
-	FileName    string           `json:"filename"`
-	Credentials EmailCredentials `json:"credentials"`
+	FileName string `json:"filename"`
 }
 
 func NewFileDatabase() (*FileDatabase, error) {
 	name, err := loaders.GetEnvVariable("DATABASE_PATH")
 	if err != nil {
 		return nil, fmt.Errorf("instantiating new DataBase Connector: %w", err)
-	}
-
-	credentials, err := NewEmailCredentials()
-	if err != nil {
-		return nil, fmt.Errorf("getting email credentials: %w", err)
 	}
 
 	if _, err := os.Stat(name); err != nil {
@@ -31,7 +25,7 @@ func NewFileDatabase() (*FileDatabase, error) {
 		}
 	}
 
-	return &FileDatabase{name, *credentials}, nil
+	return &FileDatabase{name}, nil
 }
 
 func (db *FileDatabase) ReadAll() ([]Email, error) {

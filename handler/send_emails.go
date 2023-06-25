@@ -20,6 +20,10 @@ func PostSendEmails(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
+	emailCredentials, err := models.NewEmailCredentials()
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
 
 	price, err := controller.GetPrice(cacheProvider)
 	if err != nil {
@@ -27,7 +31,7 @@ func PostSendEmails(c *gin.Context) {
 		return
 	}
 
-	err = controller.SendEmail(price, database, &database.Credentials)
+	err = controller.SendEmail(price, database, emailCredentials)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
 	}
