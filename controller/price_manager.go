@@ -23,7 +23,7 @@ func getPrice() (float64, error) {
 	return float64(invalidPrice), fmt.Errorf("servers from where prices being fetched are down")
 }
 
-func updatePrice() (float64, error) {
+func updatePrice(cacheProvider providers.CacheProvider) (float64, error) {
 	price, err := getPrice()
 	if err != nil {
 		return float64(invalidPrice), fmt.Errorf("updating price: %w", err)
@@ -34,13 +34,17 @@ func updatePrice() (float64, error) {
 		Price:     price,
 	}
 
-	writeCache(cache)
+	err = cacheProvider.Write(cache)
+	if err != nil {
+		return 0.0, fmt.Errorf("updating price: %w", err)
+	}
 
 	return price, nil
 }
 
-func GetPrice() (float64, error) {
-	cache, err := readCache()
+func GetPrice(cacheProvider providers.CacheProvider) (float64, error) {
+	cache, err := cacheProvider.Read()
+
 	if err != nil {
 		return float64(invalidPrice), fmt.Errorf("getting price: %w", err)
 	}
@@ -49,7 +53,7 @@ func GetPrice() (float64, error) {
 		return cache.Price, nil
 	}
 
-	newPrice, err := updatePrice()
+	newPrice, err := updatePrice(cacheProvider)
 	if err != nil {
 		return float64(invalidPrice), fmt.Errorf("getting price: %w", err)
 	}

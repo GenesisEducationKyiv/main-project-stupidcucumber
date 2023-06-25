@@ -11,9 +11,18 @@ import (
 )
 
 func PostSendEmails(c *gin.Context) {
-	price, _ := controller.GetPrice()
+	cacheProvider, err := controller.NewFileCache()
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
 
-	err := controller.SendEmail(price)
+	price, err := controller.GetPrice(cacheProvider)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
+		return
+	}
+
+	err = controller.SendEmail(price)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
 	}

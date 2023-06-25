@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"api/bitcoin-api/controller"
 
@@ -10,9 +12,15 @@ import (
 
 func GetPrice(c *gin.Context) {
 	answer := make(map[string]float64)
-
-	price, err := controller.GetPrice()
+	cacheProvider, err := controller.NewFileCache()
 	if err != nil {
+		fmt.Fprintf(os.Stdout, "get price: %v", err)
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+
+	price, err := controller.GetPrice(cacheProvider)
+	if err != nil {
+		fmt.Fprintf(os.Stdout, "get price: %v", err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
