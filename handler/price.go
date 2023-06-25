@@ -6,13 +6,14 @@ import (
 	"os"
 
 	"api/bitcoin-api/controller"
+	"api/bitcoin-api/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetPrice(c *gin.Context) {
 	answer := make(map[string]float64)
-	cacheProvider, err := controller.NewFileCache()
+	cacheProvider, err := models.NewFileCache()
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "get price: %v", err)
 		c.AbortWithStatus(http.StatusBadRequest)

@@ -1,7 +1,6 @@
-package controller
+package models
 
 import (
-	"api/bitcoin-api/models"
 	"api/bitcoin-api/tools/creators"
 	"api/bitcoin-api/tools/loaders"
 	"encoding/json"
@@ -25,7 +24,7 @@ func NewFileCache() (*FileCache, error) {
 		}
 
 		fileCache := FileCache{FileName: fileName}
-		err := fileCache.Write(*models.NewCachedPrice())
+		err := fileCache.Write(*NewCachedPrice())
 		if err != nil {
 			return nil, fmt.Errorf("instantiating FileCache: %w", err)
 		}
@@ -34,13 +33,13 @@ func NewFileCache() (*FileCache, error) {
 	return &FileCache{FileName: fileName}, nil
 }
 
-func (fileCache *FileCache) Write(cache models.CachedPrice) error {
+func (fileCache *FileCache) Write(cache CachedPrice) error {
 	path, err := loaders.GetEnvVariable("CACHE_PATH")
 	if err != nil {
 		return fmt.Errorf("getting .env vavriable in writeCahce: %w", err)
 	}
 
-	file, err := os.OpenFile(fileCache.FileName, os.O_WRONLY|os.O_CREATE, 0o766)
+	file, err := os.OpenFile(fileCache.FileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o766)
 	if err != nil {
 		return fmt.Errorf("writing cache to %s: %w", fileCache.FileName, err)
 	}
@@ -57,8 +56,8 @@ func (fileCache *FileCache) Write(cache models.CachedPrice) error {
 	return nil
 }
 
-func (fileCache *FileCache) Read() (*models.CachedPrice, error) {
-	var cache models.CachedPrice
+func (fileCache *FileCache) Read() (*CachedPrice, error) {
+	var cache CachedPrice
 
 	fileContent, err := os.ReadFile(fileCache.FileName)
 	if err != nil {
