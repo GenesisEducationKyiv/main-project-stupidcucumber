@@ -1,4 +1,4 @@
-package unitTest
+package unittest
 
 import (
 	"api/bitcoin-api/models"

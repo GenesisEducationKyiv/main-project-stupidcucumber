@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - hw1-cleancode
+      - main
+      - hw2-testing
   pull_request:
 
 permissions:
