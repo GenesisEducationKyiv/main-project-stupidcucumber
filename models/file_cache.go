@@ -34,11 +34,6 @@ func NewFileCache() (*FileCache, error) {
 }
 
 func (fileCache *FileCache) Write(cache CachedPrice) error {
-	path, err := loaders.GetEnvVariable("CACHE_PATH")
-	if err != nil {
-		return fmt.Errorf("getting .env vavriable in writeCahce: %w", err)
-	}
-
 	file, err := os.OpenFile(fileCache.FileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o766)
 	if err != nil {
 		return fmt.Errorf("writing cache to %s: %w", fileCache.FileName, err)
@@ -50,7 +45,7 @@ func (fileCache *FileCache) Write(cache CachedPrice) error {
 	}
 
 	if _, err := file.Write(cachedJSON); err != nil {
-		return fmt.Errorf("writing to the file %s: %w", path, err)
+		return fmt.Errorf("writing to the file %s: %w", fileCache.FileName, err)
 	}
 
 	return nil
