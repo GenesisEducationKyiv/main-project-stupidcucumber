@@ -2,7 +2,6 @@ package models
 
 import (
 	"api/bitcoin-api/tools/loaders"
-	"api/bitcoin-api/tools/validators"
 	"fmt"
 	"os"
 	"strings"
@@ -74,7 +73,7 @@ func (db *FileDatabase) Write(email Email) error {
 		return fmt.Errorf("adding email %s: %w", email.Email, err)
 	}
 
-	if !validators.ValidateEmail(email.Email) || isPresent {
+	if !email.Validate() || isPresent {
 		return fmt.Errorf("provided email is invalid")
 	}
 
