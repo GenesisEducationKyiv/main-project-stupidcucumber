@@ -11,11 +11,11 @@ type DatabaseMock struct {
 	Emails       []models.Email
 }
 
-func (d *DatabaseMock) IsPresent(mail models.Email) (bool, error) {
+func (d *DatabaseMock) IsPresent(models.Email) (bool, error) {
 	return d.EmailPresent, d.Error
 }
 
-func (d *DatabaseMock) Write(mail models.Email) error {
+func (d *DatabaseMock) Write(models.Email) error {
 	if d.EmailPresent {
 		return fmt.Errorf("email already present")
 	}
