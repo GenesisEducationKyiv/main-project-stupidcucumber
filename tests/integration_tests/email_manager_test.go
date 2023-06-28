@@ -3,7 +3,7 @@ package integrationtests
 import (
 	"api/bitcoin-api/controller"
 	"api/bitcoin-api/models"
-	"api/bitcoin-api/tests/integration_tests/mocks"
+	"api/bitcoin-api/tests/mocks"
 	"fmt"
 	"testing"
 )
