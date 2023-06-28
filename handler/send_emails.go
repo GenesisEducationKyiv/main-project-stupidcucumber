@@ -7,6 +7,7 @@ import (
 
 	"api/bitcoin-api/controller"
 	"api/bitcoin-api/models"
+	"api/bitcoin-api/providers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +26,9 @@ func PostSendEmails(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
 
-	price, err := controller.GetPrice(cacheProvider)
+	priceProviders := []providers.PriceProvider{&models.BinancePrice{}, &models.CoingeckoPrice{}}
+
+	price, err := controller.GetPrice(cacheProvider, priceProviders)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
 		return

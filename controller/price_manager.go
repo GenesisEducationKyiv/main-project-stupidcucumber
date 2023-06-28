@@ -11,11 +11,9 @@ var (
 	invalidPrice = -1
 )
 
-func getPrice() (float64, error) {
-	prices := []providers.PriceProvider{&models.BinancePrice{}, &models.CoingeckoPrice{}}
-
-	for i := 0; i < len(prices); i++ {
-		if price, err := prices[i].GetPrice(); err == nil {
+func getPrice(priceProviders []providers.PriceProvider) (float64, error) {
+	for i := 0; i < len(priceProviders); i++ {
+		if price, err := priceProviders[i].GetPrice(); err == nil {
 			return price, nil
 		}
 	}
@@ -23,8 +21,8 @@ func getPrice() (float64, error) {
 	return float64(invalidPrice), fmt.Errorf("servers from where prices being fetched are down")
 }
 
-func updatePrice(cacheProvider providers.CacheProvider) (float64, error) {
-	price, err := getPrice()
+func updatePrice(cacheProvider providers.CacheProvider, priceProviders []providers.PriceProvider) (float64, error) {
+	price, err := getPrice(priceProviders)
 	if err != nil {
 		return float64(invalidPrice), fmt.Errorf("updating price: %w", err)
 	}
@@ -42,7 +40,7 @@ func updatePrice(cacheProvider providers.CacheProvider) (float64, error) {
 	return price, nil
 }
 
-func GetPrice(cacheProvider providers.CacheProvider) (float64, error) {
+func GetPrice(cacheProvider providers.CacheProvider, priceProviders []providers.PriceProvider) (float64, error) {
 	cache, err := cacheProvider.Read()
 
 	if err != nil {
@@ -53,7 +51,7 @@ func GetPrice(cacheProvider providers.CacheProvider) (float64, error) {
 		return cache.Price, nil
 	}
 
-	newPrice, err := updatePrice(cacheProvider)
+	newPrice, err := updatePrice(cacheProvider, priceProviders)
 	if err != nil {
 		return float64(invalidPrice), fmt.Errorf("getting price: %w", err)
 	}
