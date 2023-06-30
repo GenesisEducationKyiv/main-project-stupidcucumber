@@ -6,14 +6,35 @@ import (
 	"os"
 
 	"api/bitcoin-api/controller"
+	"api/bitcoin-api/models"
+	"api/bitcoin-api/providers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func PostSendEmails(c *gin.Context) {
-	price, _ := controller.GetPrice()
+	cacheProvider, err := models.NewFileCache()
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	database, err := models.NewFileDatabase()
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
+	emailCredentials, err := models.NewEmailCredentials()
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+	}
 
-	err := controller.SendEmail(price)
+	priceProviders := []providers.PriceProvider{&models.BinancePrice{}, &models.CoingeckoPrice{}}
+
+	price, err := controller.GetPrice(cacheProvider, priceProviders)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
+		return
+	}
+
+	err = controller.SendEmail(price, database, emailCredentials)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sending emails: %v", err)
 	}

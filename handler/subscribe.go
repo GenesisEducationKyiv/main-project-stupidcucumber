@@ -10,6 +10,12 @@ import (
 )
 
 func PostSubscribe(c *gin.Context) {
+	database, err := models.NewFileDatabase()
+	if err != nil {
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+
 	var newEmail models.Email
 
 	if err := c.BindJSON(&newEmail); err != nil {
@@ -17,7 +23,7 @@ func PostSubscribe(c *gin.Context) {
 		return
 	}
 
-	if err := controller.AddEmail(newEmail); err == nil {
+	if err := controller.Subscribe(newEmail, database); err == nil {
 		c.IndentedJSON(http.StatusOK, newEmail)
 	} else {
 		c.IndentedJSON(http.StatusConflict, err.Error())

@@ -2,18 +2,16 @@ package controller
 
 import (
 	"api/bitcoin-api/models"
+	"api/bitcoin-api/providers"
 	"bytes"
 	"fmt"
 	"os"
-	"strconv"
 	"text/template"
 
 	"gopkg.in/gomail.v2"
 )
 
-func generateMessage(to string, price float64) (*gomail.Message, error) {
-	emailCredentials := models.NewEmailCredentials()
-
+func generateMessage(to string, price float64, emailCredentials *models.EmailCredentials) (*gomail.Message, error) {
 	t, err := template.ParseFiles("templates/template.html")
 	if err != nil {
 		return nil, fmt.Errorf("generating message: %w", err)
@@ -39,29 +37,23 @@ func generateMessage(to string, price float64) (*gomail.Message, error) {
 	return message, nil
 }
 
-func SendEmail(price float64) error {
-	emailCredentials := models.NewEmailCredentials()
-	port, err := strconv.ParseInt(emailCredentials.PortSMTP, 10, 64)
-	if err != nil {
-		return fmt.Errorf("sending email: %w", err)
-	}
-
-	dialer := gomail.NewDialer(emailCredentials.HostSMTP, int(port),
-		emailCredentials.HostEmail, emailCredentials.HostPassword)
-
-	emails, err := getEmails()
+func SendEmail(price float64, database providers.RepositoryProvider, emailCredentials *models.EmailCredentials) error {
+	emails, err := database.ReadAll()
 	if err != nil {
 		return fmt.Errorf("sending emails: %w", err)
 	}
 
+	dialer := gomail.NewDialer(emailCredentials.HostSMTP, emailCredentials.PortSMTP,
+		emailCredentials.HostEmail, emailCredentials.HostPassword)
+
 	for i := 0; i < len(emails); i++ {
-		message, err := generateMessage(emails[i], price)
+		message, err := generateMessage(emails[i].Email, price, emailCredentials)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error while sending to %s occured: %v", emails[i], err)
+			fmt.Fprintf(os.Stderr, "error while sending to %s occured: %v", emails[i], err)
 		}
 
 		if err := dialer.DialAndSend(message); err != nil {
-			fmt.Fprintf(os.Stderr, "Error while sending to %s occured: %v", emails[i], err)
+			fmt.Fprintf(os.Stderr, "error while sending to %s occured: %v", emails[i], err)
 		}
 	}
 
