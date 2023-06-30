@@ -1,0 +1,14 @@
+run:
+  issues-exit-code: 2
+  go: '1.19'
+linters:
+  disable-all: true
+  enable:
+    - bodyclose
+    - dupl
+    - errname
+    - forbidigo
+    - goimports
+    - gosimple
+    - stylecheck
+    - revive
